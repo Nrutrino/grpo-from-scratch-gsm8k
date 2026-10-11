@@ -25,13 +25,18 @@ grpo:
                           # all-wrong and give no advantage signal.
 
 train:
-  lr: 1.0e-6
+  lr: 2.0e-5              # LoRA needs ~10x the full-finetune LR; 1e-6 barely moves the adapter
   total_steps: 500
   warmup_steps: 10
   grad_clip: 1.0
   log_every: 1
   eval_every: 50
-  eval_n: 200             # held-out test questions per eval (greedy)
-  save_every: 100
+  eval_n: 200             # held-out test questions for the periodic (mid-training) eval
+  eval_batch_size: 32     # generation batch for eval only (no grads, so can be larger)
+  eval_full_baseline: true   # full 1319-question test eval BEFORE training (step 0)
+  eval_full_final: true      # full test eval after the last step
+  save_every: 25          # 25 → at most ~15 min lost to an interruption (step ≈ 40 s when the GPU is free)
+  baseline_acc: 0.7074    # measured on full test split (n=1319, greedy) on 2026-10-10; set null to re-measure
   seed: 42
   ckpt_dir: "checkpoints"
+  log_dir: "logs"         # train_log.csv / eval_log.csv / results.json (plot with scripts/plot.py)

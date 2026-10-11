@@ -5,11 +5,15 @@ from .reward import is_correct
 
 
 @torch.no_grad()
-def evaluate(model, tok, test_data, cfg, device, n: int) -> float:
+def evaluate(model, tok, test_data, cfg, device, n: int | None = None, bs: int | None = None) -> float:
+    """
+    n=None → the whole test split.  bs defaults to train.eval_batch_size (falls back to
+    prompts_per_step).  Generation is greedy, so this is deterministic given the weights.
+    """
     model.eval()
     model.config.use_cache = True
-    sample = test_data[:n]
-    bs = cfg["grpo"]["prompts_per_step"]
+    sample = test_data if n is None else test_data[:n]
+    bs = bs or cfg["train"].get("eval_batch_size") or cfg["grpo"]["prompts_per_step"]
     correct = 0
     for i in range(0, len(sample), bs):
         chunk   = sample[i: i + bs]

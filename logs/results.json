@@ -1,0 +1,7 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "lr": 2e-05,
+  "total_steps": 500,
+  "baseline_acc": 0.7074,
+  "final_acc": 0.7399545109931767
+}
